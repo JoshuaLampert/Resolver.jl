@@ -192,7 +192,6 @@ end
     # `julia-downgrade-compat` action to resolve a project
     # depending on Compat with "4.0" compatibility requirement.
 
-    julia = Base.julia_cmd()[1]
     project = pkgdir(Resolver, "bin")
     script = joinpath(project, "resolve.jl")
     julia_version = string(Int(VERSION.major), ".", VERSION.minor)
@@ -213,9 +212,9 @@ Compat = "4"
 """)
     end
 
-    run(`$julia --project=$project -e 'import Pkg; Pkg.instantiate()'`)
-    @test_nowarn run(`$julia --project=$project $script $dir --min=@deps --julia=$julia_version`)
-    @test_nowarn run(`$julia --project=$dir -e '
+    run(`$(Base.julia_cmd()) --project=$project -e 'import Pkg; Pkg.instantiate()'`)
+    @test success(`$(Base.julia_cmd()) --project=$project $script $dir --min=@deps --julia=$julia_version`)
+    @test success(`$(Base.julia_cmd()) --project=$dir -e '
         using Pkg, UUIDs
         deps = Pkg.dependencies()
         pkg = deps[UUID("34da2185-b29b-5c13-b0c7-acf172513d20")]
